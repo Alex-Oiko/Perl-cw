@@ -131,6 +131,8 @@ elsif(-d "$dir/$_"){#check if it is a directory and if it is recurse with explor
 	&explore("$dir/$_",);
 		}
 	}
+closedir(DIRE);
+
 }
 
 #this function checks what type of format the file is and and places it to the according hashmap
@@ -158,13 +160,27 @@ my($file,$path) = @_;
 #this function checks for the files on the docfiles hashmap and on the pdffiles hashmap and stores the similar file onto the both hashmap 
 sub checkForBoth{
 
-foreach(keys %docfiles){
+#for efficiency reasons ckeck wich hashmap is bigger. This check in the event that one hashmap is a lot larger than the other one/
+if(scalar[keys %docfiles]<=scalar[keys %pdffiles]){
 
+	foreach(keys %docfiles){
 
-if
-$both{$_} = $docfiles{$_} if(exists $pdffiles{$_});
+	$both{$_} = $docfiles{$_} if(exists $pdffiles{$_});
+
+	}
 
 }
+elsif(scalar[keys %docfiles]>scalar[keys %pdffiles]){
+
+	foreach(keys %pdffiles){
+	
+	$both{$_} = $pdffiles{$_} if(exists $docfiles{$_});
+
+	}
+
+}
+
+
 
 #prints the results
 foreach (keys %both){
@@ -176,6 +192,7 @@ print "$both{$_}/$_<br>";
 
 }
 
+#this function reads the apache log file and extracts the file request that was done by the server. It counts the number of files taht exist in the both hash it comes across
 sub readLog{
 
 $pdfcounter=0;
@@ -185,12 +202,12 @@ open(FILE,$logfile) or print "error";
 
 while(<FILE>){
 
-	if($_=~/\.pdf/ || $_=~/\.PDF/){
+	if($_=~/\.pdf/ || $_=~/\.PDF/){#check if the line matches a pdf or PDF string in it
 
-	$get = substr($_,index($_,"GET")+4);
-        $thePath = substr($get,1,index($get,"\.")-1);
-        @line = split(/\//,$thePath);
-	$pdfcounter++ if(exists $both{$line[scalar(@line)-1]})
+	$get = substr($_,index($_,"GET")+4);#get the string after the GET HTTP command
+        $thePath = substr($get,1,index($get,"\.")-1);#get only the path without the extension
+        @line = split(/\//,$thePath);#split the path in order to only get the filename
+	$pdfcounter++ if(exists $both{$line[scalar(@line)-1]})#increment the counter if the file exists in the both hashmap
 
 
 	}
@@ -205,5 +222,6 @@ while(<FILE>){
 
 }
 
+closedir(FILE);
 
 }

@@ -4,6 +4,9 @@
 use CGI;
 
 my $q  = new CGI;
+my %docfiles = ();#hashmap that keeps all the doc files
+my %pdffiles = ();#hashap that keeps all hte pdf files
+my %both = ();#hashmap that keeps the files that exist in both pdf and doc format
 
 print $q->header;
 print $q->start_html("Knurled Widgets Website Tools");
@@ -12,6 +15,7 @@ print $q->h1("Knurled Widgets Website Tools");
 &print_results;
 print $q->end_html;
 
+#creates the initial form according to the spec
 sub print_form{
 
 print $q->start_form("GET");
@@ -47,31 +51,28 @@ print $q->reset(-name=>'Reset',
                  -value=>'Reset');
 }
 
-
+#calls the function &explore prints the results of the query, according to the options supplied by the user in the initial form
 sub print_results{
 
 $maindir = $q->param('path');
 @filetypes = $q->param('file_type');
 $logfile = $q->param('logfile');
-%docfiles = ();
-%pdffiles = ();
-%both = ();
 
 &explore($maindir);
 
 foreach (@filetypes){
 
-if($_=~/in_pdf/){
+if($_=~/in_pdf/){#check if the user has the in_pdf option on
 	print $q->h2("List of pdf datasheets");
 	&print_pdfs; 
 	}
-if($_=~/in_doc/){
+if($_=~/in_doc/){#check if the user has the in_doc option on
 	print $q->h2("List of doc datasheets");
 	&print_docs; 
 
 	}
 
-if($_=~/in_both/){
+if($_=~/in_both/){#check if the user has the in_both option on
 	print $q->h2("List of dual format datasheets");
 	&checkForBoth;
 
@@ -79,7 +80,7 @@ if($_=~/in_both/){
 }
 
 
-if($q->param('count')=~/yes/){
+if($q->param('count')=~/yes/){#check if the user has the yes option on
 
 &readLog;
 
@@ -91,6 +92,7 @@ print $q->h2("Number of doc requests for dual format datasheets = ",$doccounter)
 
 }
 
+#print all the doc files in the docfiles hashmap, along with the path
 sub print_docs{
 
 foreach (keys %docfiles){
@@ -98,6 +100,8 @@ foreach (keys %docfiles){
 
 	}
 }
+
+#print all the pdf files in the pdffiles hashmap, along with the path
 sub print_pdfs{
 
 foreach (keys %pdffiles){
@@ -106,6 +110,7 @@ foreach (keys %pdffiles){
 
 }
 
+#explore funcition handles the recursion that is done throughout the directory supplied by the user
 sub explore{
 
 my($dir) = @_;
@@ -114,50 +119,54 @@ opendir(DIRE,$dir) or print "";
 
 foreach(readdir(DIRE)){
 
-if(-d "$dir/$_" && (/\./ || /\.\./)){
-#do nothing
+if(-d "$dir/$_" && (/\./ || /\.\./)){#check if it is a directory. If it is this dir or the previous(. or ..) break
+		break;
 		}
 
-elsif(-f "$dir/$_"){
+elsif(-f "$dir/$_"){#check if it is a file and if it is call the checkFileType function
 	&checkFileType($_,"$dir");
 }
 
-elsif(-d "$dir/$_"){
+elsif(-d "$dir/$_"){#check if it is a directory and if it is recurse with explore on that directory
 	&explore("$dir/$_",);
 		}
 	}
 }
 
+#this function checks what type of format the file is and and places it to the according hashmap
 sub checkFileType{
 
 my($file,$path) = @_;
 
-	if($file =~/(\.doc)$/ || /(\.DOC)$/){
-	$file =~ s{(\.([A-Z][A-Z][A-Z])?([a-z][a-z][a-z])?)$}{};
-	$path = substr($path,length($maindir)+1);
-	$docfiles{$file} = $path;
+	if($file =~/(\.doc)$/ || /(\.DOC)$/){#check if the extension ends with .doc or .DOC
+	$file =~ s{(\.(DOC)?(doc)?)$}{};#substitute the extension with nothing
+	$path = substr($path,length($maindir)+1);#cut the path supplied by the use and get the remaining
+	$docfiles{$file} = $path;#add in the hashmap as key the filename and as value the path
 	}
-	elsif($file =~/(\.pdf)$/ || /(\.PDF)$/){
-	$file =~ s{(\.([A-Z][A-Z][A-Z])?([a-z][a-z][a-z])?)$}{};
+	elsif($file =~/(\.pdf)$/ || /(\.PDF)$/){#do the same as above
+	$file =~ s{(\.(PDF)?(pdf)?)$}{};
 	$path = substr($path,length($maindir)+1);
 	$pdffiles{$file} = $path;
 	}
 	else{
-	print "BANANAS";
+	break;
 	}	
 
 
 }
 
+#this function checks for the files on the docfiles hashmap and on the pdffiles hashmap and stores the similar file onto the both hashmap 
 sub checkForBoth{
 
 foreach(keys %docfiles){
 
-#push @both,$_ if (exists $pdffiles{$_});
+
+if
 $both{$_} = $docfiles{$_} if(exists $pdffiles{$_});
 
 }
 
+#prints the results
 foreach (keys %both){
 
 print "$both{$_}/$_<br>"; 

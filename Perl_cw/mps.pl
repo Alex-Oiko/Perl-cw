@@ -138,17 +138,17 @@ closedir(DIRE);
 #this function checks what type of format the file is and and places it to the according hashmap
 sub checkFileType{
 
-$lengthOfdir = length($maindir)+1;#the length of the string(path) supplied by the user. It will be used to cut the path.
+my $lengthOfdir = length($maindir)+1;#the length of the string(path) supplied by the user. It will be used to cut the path.
 
 my($file,$path) = @_;
 
-	if($file =~/(\.doc)$/ || /(\.DOC)$/){#check if the extension ends with .doc or .DOC
-	$file =~ s{(\.(DOC)?(doc)?)$}{};#substitute the extension with nothing
+	if($file =~/(\.[Dd][Oo][Cc])$/){#check if the extension ends with .doc
+	$file =~ s{(\.[Dd][Oo][Cc])$}{};#substitute the extension with nothing
 	$path = substr($path,$lengthOfdir);#cut the path supplied by the use and get the remaining
 	$docfiles{$file} = $path;#add in the hashmap as key the filename and as value the path
 	}
-	elsif($file =~/(\.pdf)$/ || /(\.PDF)$/){#do the same as above
-	$file =~ s{(\.(PDF)?(pdf)?)$}{};
+	elsif($file =~/(\.[Pp][Dd][Ff])$/){#do the same as above
+	$file =~ s{(\.[Pp][Dd][Ff])$}{};
 	$path = substr($path,$lengthOfdir);
 	$pdffiles{$file} = $path;
 	}
@@ -204,20 +204,20 @@ open(FILE,$logfile) or print "error";
 
 while(<FILE>){
 
-	if($_=~/\.pdf/ || $_=~/\.PDF/){#check if the line matches a pdf or PDF string in it
+	if($_=~/\.[Pp][Dd][Ff]/){#check if the line matches a pdf string in it
 	 $get = substr($_,index($_,"GET")+4);#get the string after the GET HTTP command
 	 $thePath = substr($get,1,index($get,"\.")+3);#take the string after the dot, with file extension
-	 if($thePath=~/(\.pdf)$/ || $thePath=~/(\.PDF)$/){#make sure that this is the correct file extension. The reason for that being that when checking for pdf or PDF in the first if statement, a random pdf might matched. Although highly unlikely that this string will match a string in the %both hash, someone might tamper with the log file and produce false data
+	 if($thePath=~/(\.[Pp][Dd][Ff])$/){#make sure that this is the correct file extension. The reason for that being that when checking for pdf or PDF in the first if statement, a random pdf might matched. Although highly unlikely that this string will match a string in the %both hash, someone might tamper with the log file and produce false data
 	 	$thePath = substr($thePath,1,index($thePath,"\.")-1);#take the path without the file extension
 	 	@line = split(/\//,$thePath);#split the thePath string
 		$pdfcounter++ if(exists $both{$line[scalar(@line)-1]});#increment the counter if the file exists in the both hash
 		}
 	}
 	#same as before here but with the doc files
-	elsif($_=~/\.doc/ || $_=~/\.DOC/){
+	elsif($_=~/\.[Dd][Oo][Cc]/){
 	$get = substr($_,index($_,"GET")+4);
 	$thePath = substr($get,1,index($get,"\.")+3);
-	if($thePath=~/(\.doc)$/ || $thePath=~/(\.DOC)$/){
+	if($thePath=~/(\.[Dd][Oo][Cc])$/){
 		$thePath = substr($thePath,1,index($thePath,"\.")-1);
 	        @line = split(/\//,$thePath);
 	        $doccounter++ if(exists $both{$line[scalar(@line)-1]});

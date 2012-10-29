@@ -138,16 +138,18 @@ closedir(DIRE);
 #this function checks what type of format the file is and and places it to the according hashmap
 sub checkFileType{
 
+$lengthOfdir = length($maindir)+1;#the length of the string(path) supplied by the user. It will be used to cut the path.
+
 my($file,$path) = @_;
 
 	if($file =~/(\.doc)$/ || /(\.DOC)$/){#check if the extension ends with .doc or .DOC
 	$file =~ s{(\.(DOC)?(doc)?)$}{};#substitute the extension with nothing
-	$path = substr($path,length($maindir)+1);#cut the path supplied by the use and get the remaining
+	$path = substr($path,$lengthOfdir);#cut the path supplied by the use and get the remaining
 	$docfiles{$file} = $path;#add in the hashmap as key the filename and as value the path
 	}
 	elsif($file =~/(\.pdf)$/ || /(\.PDF)$/){#do the same as above
 	$file =~ s{(\.(PDF)?(pdf)?)$}{};
-	$path = substr($path,length($maindir)+1);
+	$path = substr($path,$lengthOfdir);
 	$pdffiles{$file} = $path;
 	}
 	else{
@@ -204,23 +206,37 @@ while(<FILE>){
 
 	if($_=~/\.pdf/ || $_=~/\.PDF/){#check if the line matches a pdf or PDF string in it
 
-	$get = substr($_,index($_,"GET")+4);#get the string after the GET HTTP command
-        $thePath = substr($get,1,index($get,"\.")-1);#get only the path without the extension
-        @line = split(/\//,$thePath);#split the path in order to only get the filename
-	$pdfcounter++ if(exists $both{$line[scalar(@line)-1]})#increment the counter if the file exists in the both hashmap
-
-
+	#$get = substr($_,index($_,"GET")+4);#get the string after the GET HTTP command
+        #$thePath = substr($get,1,index($get,"\.")-1);#get only the path without the extension
+        #@line = split(/\//,$thePath);#split the path in order to only get the filename
+	#$pdfcounter++ if(exists $both{$line[scalar(@line)-1]})#increment the counter if the file exists in the both hashmap
+	 $get = substr($_,index($_,"GET")+4);
+	 $thePath = substr($get,1,index($get,"\.")+3);
+	 if($thePath=~/(\.pdf)$/ || $thePath=~/(\.PDF)$/){
+	 	$thePath = substr($thePath,1,index($thePath,"\.")-1);
+	 	@line = split(/\//,$thePath);
+		$pdfcounter++ if(exists $both{$line[scalar(@line)-1]});
+	#print "pdf is $line[scalar(@line)-1]\n";
+		}
 	}
 	elsif($_=~/\.doc/ || $_=~/\.DOC/){
 	
+	#$get = substr($_,index($_,"GET")+4);
+        #$thePath = substr($get,1,index($get,"\.")-1);
+        #@line = split(/\//,$thePath);
+	#$doccounter++ if(exists $both{$line[scalar(@line)-1]});
 	$get = substr($_,index($_,"GET")+4);
-        $thePath = substr($get,1,index($get,"\.")-1);
-        @line = split(/\//,$thePath);
-	$doccounter++ if(exists $both{$line[scalar(@line)-1]});
+	$thePath = substr($get,1,index($get,"\.")+3);
+	if($thePath=~/(\.doc)$/ || $thePath=~/(\.DOC)$/){
+		$thePath = substr($thePath,1,index($thePath,"\.")-1);
+	        @line = split(/\//,$thePath);
+	        $doccounter++ if(exists $both{$line[scalar(@line)-1]});
+	         #print "pdf is $line[scalar(@line)-1]\n";
+	                 }
+
+	         }
 	
 	}
-
-}
 
 closedir(FILE);
 

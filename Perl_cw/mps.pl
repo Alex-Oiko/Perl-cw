@@ -115,7 +115,7 @@ sub explore{
 
 my($dir) = @_;
 
-opendir(DIRE,$dir) or print "";
+opendir(DIRE,$dir) or print "<br>The directory you have supplied does not exist, or it is not a directory.</br>";
 
 foreach(readdir(DIRE)){
 
@@ -200,7 +200,7 @@ sub readLog{
 $pdfcounter=0;
 $doccounter=0;
 
-open(FILE,$logfile) or print "error";
+open(FILE,$logfile) or print "<br><b>The apache log file you have supplied does not exist</b></br>";
 
 while(<FILE>){
 

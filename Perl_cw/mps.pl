@@ -205,33 +205,22 @@ open(FILE,$logfile) or print "error";
 while(<FILE>){
 
 	if($_=~/\.pdf/ || $_=~/\.PDF/){#check if the line matches a pdf or PDF string in it
-
-	#$get = substr($_,index($_,"GET")+4);#get the string after the GET HTTP command
-        #$thePath = substr($get,1,index($get,"\.")-1);#get only the path without the extension
-        #@line = split(/\//,$thePath);#split the path in order to only get the filename
-	#$pdfcounter++ if(exists $both{$line[scalar(@line)-1]})#increment the counter if the file exists in the both hashmap
-	 $get = substr($_,index($_,"GET")+4);
-	 $thePath = substr($get,1,index($get,"\.")+3);
-	 if($thePath=~/(\.pdf)$/ || $thePath=~/(\.PDF)$/){
-	 	$thePath = substr($thePath,1,index($thePath,"\.")-1);
-	 	@line = split(/\//,$thePath);
-		$pdfcounter++ if(exists $both{$line[scalar(@line)-1]});
-	#print "pdf is $line[scalar(@line)-1]\n";
+	 $get = substr($_,index($_,"GET")+4);#get the string after the GET HTTP command
+	 $thePath = substr($get,1,index($get,"\.")+3);#take the string after the dot, with file extension
+	 if($thePath=~/(\.pdf)$/ || $thePath=~/(\.PDF)$/){#make sure that this is the correct file extension. The reason for that being that when checking for pdf or PDF in the first if statement, a random pdf might matched. Although highly unlikely that this string will match a string in the %both hash, someone might tamper with the log file and produce false data
+	 	$thePath = substr($thePath,1,index($thePath,"\.")-1);#take the path without the file extension
+	 	@line = split(/\//,$thePath);#split the thePath string
+		$pdfcounter++ if(exists $both{$line[scalar(@line)-1]});#increment the counter if the file exists in the both hash
 		}
 	}
+	#same as before here but with the doc files
 	elsif($_=~/\.doc/ || $_=~/\.DOC/){
-	
-	#$get = substr($_,index($_,"GET")+4);
-        #$thePath = substr($get,1,index($get,"\.")-1);
-        #@line = split(/\//,$thePath);
-	#$doccounter++ if(exists $both{$line[scalar(@line)-1]});
 	$get = substr($_,index($_,"GET")+4);
 	$thePath = substr($get,1,index($get,"\.")+3);
 	if($thePath=~/(\.doc)$/ || $thePath=~/(\.DOC)$/){
 		$thePath = substr($thePath,1,index($thePath,"\.")-1);
 	        @line = split(/\//,$thePath);
 	        $doccounter++ if(exists $both{$line[scalar(@line)-1]});
-	         #print "pdf is $line[scalar(@line)-1]\n";
 	                 }
 
 	         }

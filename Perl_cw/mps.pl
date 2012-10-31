@@ -4,9 +4,9 @@
 use CGI;
 
 my $q  = new CGI;
-my %docfiles = ();#hashmap that keeps all the doc files
-my %pdffiles = ();#hashap that keeps all hte pdf files
-my %both = ();#hashmap that keeps the files that exist in both pdf and doc format
+my %docfiles = ();#hash that keeps all the doc files
+my %pdffiles = ();#hash that keeps all hte pdf files
+my %both = ();#hash that keeps the files that exist in both pdf and doc format
 
 print $q->header;
 print $q->start_html("Knurled Widgets Website Tools");

@@ -82,7 +82,7 @@ if($_=~/in_both/){#check if the user has the in_both option on
 
 if($q->param('count')=~/yes/){#check if the user has the yes option on
 
-&readLog;
+&readLog;#this method will read the apache log supplied by the user
 
 print $q->h2("Number of pdf requests for dual format datasheets = ",$pdfcounter);
 
@@ -110,7 +110,7 @@ foreach (keys %pdffiles){
 
 }
 
-#explore funcition handles the recursion that is done throughout the directory supplied by the user
+#explore function handles the recursion that is done throughout the directory supplied by the user in order to find files and add them to hashmaps eventually 
 sub explore{
 
 my($dir) = @_;

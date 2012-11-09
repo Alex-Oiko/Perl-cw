@@ -1,0 +1,43 @@
+Search->possible xss and SQL injection(1)
+
+FailCMS->old software. Check Home Page(4)
+
+Dodgy upload->Profile(3)
+
+Email->Contact us page. You can modify it from the page source(9)
+
+Directories can be accessed through URL, such as /include/,/functions/ etc.(8),(6)
+(To solve, possibly try changing the permissions)
+
+	-/include/debug.php can be viewed by any user without authorisation(8)(11)
+
+	-/include/global.php,/include/init.php gives "bad" error message(8)(12)
+		--so does /modules/forums.php
+
+	-/functions/core->shows basic web site files(6)
+
+	-You can see all the files in /admin/
+
+	-Access to /resources/scripts/jquery-1.7.js
+
+	-Access to /resources/styles(Not really important but still ya know)
+
+Failure when trying to login shows the faulty database query(11)
+
+-/modules/php.info->all the effin info is there(11)
+
+-register.php doesnt redirect to the correct path(?????)
+
+-login can have a 1 word password(10)->introduce an upper limiti
+
+-If you delete the session id(PHPSSID) and edit the content of the other cookie, you can be logged in as any user you want(7)
+
+-Post a link in a forum and you can make anybody logout or do any bad transition(15)
+
+-session hijacking if the session id of someone is found(14)
+
+-@forum_display--> board id is exposed to the user(can be tampered with)
+
+-force logout in login.php might help cross site request forgery
+
+-$query->something seems to come up very often in places that many vulnerabilities seem to exist.ASK!!(e.g. $query->add_data)

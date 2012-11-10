@@ -1,9 +1,0 @@
-@ register.php--->added an extra if statement to prevent brute force attacking of passwords
-
-@ /include/class_database & /include/functions.php added an if statement in order to chck if the user is an admin in order to determine whether to print the stack trace or not
-
-@ /functions/core/contact.php commented the part of adding an the contact_email and the user_email to the form.
-
-also for above ^^ @ contact.php changed the post commands at line 26 and in their place i put the contact_email from the db and the user_email from the db. Now the email addresses cannot be changed using firebug
-
-@functions/core/login.php....added a function make_toke(). Also in login I add to the session array a token element.
